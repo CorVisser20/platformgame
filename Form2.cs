@@ -11,25 +11,26 @@ using WMPLib;
 
 namespace PlatformGame
 {
-    public partial class Form2 : Form
+    public partial class Platformgame : Form
     {
 
-        bool goLeft, goRight, jumping;
+        bool goLeft, goRight, jumping, hasKey;
         int jumpSpeed = 10;
         int jumpingDirection = 1;
         int force = 8;
-        int score = 0;
+        int score = GameProps.Coins;
         int playerSpeed = 5;
         int backgroundSpeed = 8;
+        int enemySawSpeed = 1;
 
-        int playerHealth = 100;
+        int playerHealth = GameProps.Health;
 
         // Sounds //
         WindowsMediaPlayer sound1 = new WindowsMediaPlayer();
         WindowsMediaPlayer sound2 = new WindowsMediaPlayer();
         WindowsMediaPlayer music = new WindowsMediaPlayer();
 
-        public Form2()
+        public Platformgame()
         {
             InitializeComponent();
         }
@@ -41,13 +42,13 @@ namespace PlatformGame
 
         private void KeyIsDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Left)
+            if (e.KeyCode == Keys.A || e.KeyCode == Keys.Left)
             {
                 player.Image = Properties.Resources.character_idle_flip;
                 goLeft = true;
             }
 
-            if (e.KeyCode == Keys.Right)
+            if (e.KeyCode == Keys.D || e.KeyCode == Keys.Right)
             {
                 player.Image = Properties.Resources.character_idle;
                 goRight = true;
@@ -61,12 +62,12 @@ namespace PlatformGame
 
         private void KeyIsUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Left)
+            if (e.KeyCode == Keys.A || e.KeyCode == Keys.Left)
             {
                 goLeft = false;
             }
 
-            if (e.KeyCode == Keys.Right)
+            if (e.KeyCode == Keys.D || e.KeyCode == Keys.Right)
             {
                 goRight = false;
             }
@@ -178,6 +179,7 @@ namespace PlatformGame
                         sound2.URL = "sound2.mp3";
                         x.Visible = false;
                         score += 1;
+                        GameProps.Coins = score;
                     }
                 }
 
@@ -185,7 +187,8 @@ namespace PlatformGame
                 {
                     if (player.Bounds.IntersectsWith(x.Bounds))
                     {
-                        playerHealth -= 1;
+                        playerHealth -= 2;
+                        GameProps.Health = playerHealth;
                     }
                 }
 
@@ -196,6 +199,33 @@ namespace PlatformGame
                         x.Visible = false;
                         keyScore.Text = "Key: Yes";
                     }
+                }
+
+                if (x is PictureBox && (string)x.Tag == "door")
+                {
+                    if (player.Bounds.IntersectsWith(x.Bounds))
+                    {
+                        if (keyScore.Text == "Key: Yes" && key.Visible == false)
+                        {
+                            Form3 f3 = new Form3();
+                            music.controls.stop();
+                            f3.Show();
+                            GameTimer.Stop();
+                            this.Hide();
+                        }
+                        else
+                        {
+                            MessageBox.Show("You need a key to open this door. " + Environment.NewLine + "Click OK to continue.");
+                        }
+                    }
+                }
+
+                // Move Enemy Saw //
+                enemySaw.Left -= enemySawSpeed;
+
+                if (enemySaw.Left < pictureBox20.Left || enemySaw.Left + enemySaw.Width > pictureBox20.Left + pictureBox20.Width)
+                {
+                    enemySawSpeed = -enemySawSpeed;
                 }
             }
 
@@ -210,7 +240,7 @@ namespace PlatformGame
 
         private void RestartGame()
         {
-            Form2 newWindow = new Form2();
+            Platformgame newWindow = new Platformgame();
             newWindow.Show();
             this.Hide();
         }

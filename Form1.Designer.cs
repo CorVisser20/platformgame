@@ -742,7 +742,7 @@ namespace PlatformGame
             this.Controls.Add(this.pictureBox6);
             this.Controls.Add(this.background);
             this.Name = "Form1";
-            this.Text = "v";
+            this.Text = "Platformgame";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CloseGame);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.KeyIsDown);
